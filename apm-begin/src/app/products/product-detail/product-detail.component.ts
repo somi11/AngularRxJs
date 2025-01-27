@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
-import { Subscription, tap } from 'rxjs';
+import { EMPTY, Subscription, catchError, tap } from 'rxjs';
 
 @Component({
     selector: 'pm-product-detail',
@@ -30,7 +30,12 @@ export class ProductDetailComponent implements OnChanges ,OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     const id = changes['productId'].currentValue
     if(id){
-     this.sub = this.productService.getProduct(id)
+     this.sub = this.productService.getProduct(id).pipe(
+      catchError((err) => {
+        this.errorMessage = err;
+        return EMPTY
+      })
+     )
      .subscribe(product => this.product = product)
     }
   }

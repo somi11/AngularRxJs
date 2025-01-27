@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 
+
 @Component({
   selector: 'pm-root',
   standalone: true,
@@ -14,5 +15,6 @@ export class AppComponent {
   pageTitle = 'Acme Product Management';
 
   cartCount = 0;
+  
 
 }

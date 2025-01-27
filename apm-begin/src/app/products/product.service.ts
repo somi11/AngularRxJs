@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, of, tap, throwError } from 'rxjs';
 import { Product } from './product';
+import { ProductData } from './product-data';
+import { HttpErrorService } from '../utilities/http-error.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +11,14 @@ import { Product } from './product';
 export class ProductService {
   // Just enough here for the code to compile
   private productsUrl = 'api/products';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient , private errorService : HttpErrorService) {}
 
   getProducts() : Observable<Product []> {
     return this.http.get<Product []>(this.productsUrl)
        .pipe(
-        tap(() => console.log('In http get pipeline'))
+        tap(() => console.log('In http get pipeline')),
+        catchError( err => this.handleError(err)
+        )
        ) 
   }
 
@@ -22,7 +26,13 @@ export class ProductService {
     const productUrl = this.productsUrl + '/' + id
     return this.http.get<Product> (productUrl)
     .pipe(
-      tap(() => console.log('In http get pipeline'))
+      tap(() => console.log('In http get pipeline')),
+      catchError(err => this.handleError(err))
     )
+  }
+
+  private handleError(err: HttpErrorResponse) : Observable<never> {
+   const formattedMessage = this.errorService.formatError(err)
+  return throwError(() => formattedMessage)
   }
 }
