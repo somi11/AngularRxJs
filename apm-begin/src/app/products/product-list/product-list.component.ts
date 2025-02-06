@@ -14,13 +14,17 @@ import { EMPTY, catchError, tap } from 'rxjs';
 export class ProductListComponent  {
   // Just enough here for the template to compile
   pageTitle = 'Products';
-  errorMessage = '';
+
+  /*
  readonly products$ = this.productService.products$.pipe(
   catchError(err => {
     this.errorMessage = err;
     return EMPTY;
   })
  )
+ */
+ products = this.productService.products;
+ errorMessage = this.productService.productError;
 
  constructor(private productService : ProductService) {
 
@@ -28,9 +32,12 @@ export class ProductListComponent  {
  
 
   // Selected product id to highlight the entry
-  selectedProductId: number = 0;
+
+  //readonly selectedProductId$ = this.productService.productSelected$;
+  selectProductId = this.productService.selectedProductId
 
   onSelected(productId: number): void {
-    this.selectedProductId = productId;
+    this.productService.productSelected(productId);
+    //this.selectedProductId = productId;
   }
 }

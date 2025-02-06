@@ -1,6 +1,7 @@
 //import 'zone.js/dist/zone';  // Required for Stackblitz
 import { Component } from '@angular/core';
 import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
+import { CartService } from './cart/cart.service';
 
 
 @Component({
@@ -13,8 +14,8 @@ import { RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 export class AppComponent {
   // Just enough here for the template to compile
   pageTitle = 'Acme Product Management';
-
-  cartCount = 0;
+   constructor(private cartService : CartService) {}
+  cartCount = this.cartService.cartCount;
   
 
 }
