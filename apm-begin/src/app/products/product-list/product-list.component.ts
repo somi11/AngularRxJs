@@ -24,7 +24,7 @@ export class ProductListComponent  {
  )
  */
  products = this.productService.products;
- errorMessage = this.productService.productError;
+ errorMessage = this.productService.productsError;
 
  constructor(private productService : ProductService) {
 

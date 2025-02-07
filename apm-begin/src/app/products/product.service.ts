@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Inject, Injectable, computed, signal } from '@angular/core';
+import { Inject, Injectable, computed, createPlatform, signal } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, combineLatest, filter, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { Product, Result } from './product';
 import { HttpErrorService } from '../utilities/http-error.service';
@@ -32,7 +32,7 @@ selectedProductId = signal<number | undefined>(undefined);
  private productsResult = toSignal(this.productsResults$ , {initialValue : ({data : []} as Result<Product[]>)})
 
 products = computed(() => this.productsResult().data)
-productError = computed(() => this.productsResult().error)
+productsError = computed(() => this.productsResult().error)
 /*  
 products = computed(() => {
     try {
@@ -45,7 +45,7 @@ products = computed(() => {
 
 
 
-readonly product$ = toObservable(this.selectedProductId)
+readonly productResult$ = toObservable(this.selectedProductId)
 .pipe(
   filter(Boolean),
   switchMap(id => {
@@ -53,11 +53,17 @@ readonly product$ = toObservable(this.selectedProductId)
     return  this.http.get<Product>(productUrl)
     .pipe(
       switchMap(product => this.getProductWithReviews(product)),
-      catchError(err => this.handleError(err))
+      catchError(err => of({
+        data : undefined,
+        error : this.errorService.formatError(err)
+      } as Result<Product>))
     )
-  })
+  }),
+  map( p => ({data : p} as Result<Product>))
 )
-
+private productResult = toSignal(this.productResult$);
+product = computed(() => this.productResult()?.data);
+productError = computed(() => this.productResult()?.error)
 /*
 readonly product$ = combineLatest(
   [
